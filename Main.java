@@ -3,9 +3,8 @@ class BinomialDistribution{
     /*Class to get binomial distribution percentage in each case, we can use the values obtained to
      * obtain each column of the binomial distribution graph*/
     double binomial;
-    double []array = new double[1000];
+    double []array = new double[100000];
     double fact_n=1,fact_r=1,fact_nr=1;
-    double sum_fair=0,sum_cheat=0;
     BinomialDistribution(int n,double prob){
         for(int r=0;r<=n;r++) {
             //if statements used to prevent division by 0
@@ -39,29 +38,23 @@ class BinomialDistribution{
         }
     }
     void Display(int n){
-        for(int i = 0;i<n;i++){
-            System.out.println(array[i]);
+        for(int i = 0;i<=n;i++){
+            System.out.print(" "+array[i]);
         }
     }
-    int probability(BinomialDistribution binfair,BinomialDistribution bincheat,double fair,double cheater){
-        int flag=0;
-        for(int i=binfair.array.length-1;i>0;i--){
-            sum_fair += binfair.array[i];
-            sum_cheat+=bincheat.array[i];
-            if(sum_fair>fair || sum_cheat>cheater){
-                break;
-            }else if(sum_fair<=fair && sum_cheat<=cheater){
-                //System.out.println("We need to do at least "+i+" out of "+binfair.array.length+" tosses");
-                flag=1;
-                break;
-            }
+    double SliderValue(int max,int val){//n+1 elements
+        double flag=0;
+        for(int i = max+1;val>=0;i--){
+            flag+=array[i];
+            val--;
         }
         return flag;
     }
 }
 public class Main {
     public static void main(String[] args) {
-        int flag=0,val = 0;
+        int flag = 0, val = 0;
+        double fair_sum = 0, cheat_sum = 0;
         BinomialDistribution[] binfair = new BinomialDistribution[1000];
         BinomialDistribution[] bincheat = new BinomialDistribution[1000];
         Scanner sc = new Scanner(System.in);
@@ -73,20 +66,30 @@ public class Main {
         double percentage = sc.nextDouble();
         // do the binfair array declaration, then assign value using method ArrayDeclaration and then do a test to see if
         //array is displayed
-        /*int val = 0;
-        for(int f=0;i<=5;i++){
-            binfair[i] = new BinomialDistribution(val,0.5);
+        /*for (int f = 0; f <= 5; f++) {
+            binfair[f] = new BinomialDistribution(val, 0.5);
             val++;
+        }*/
+        /*binfair[4].Display(4);
+        System.out.println();
+        System.out.println(binfair[4].SliderValue(4,2));*/
+        for(int i = 0;flag==0;i++){
+            binfair[i] = new BinomialDistribution(i,0.5);
+            bincheat[i] = new BinomialDistribution(i,percentage);
+            for(int j = 0;j<=i;j++) {
+                //the conditions should come after the values sum in each case is obtained.
+                fair_sum += binfair[i].SliderValue(i, j);
+                cheat_sum += bincheat[i].SliderValue(i, j);
+                if (fair_sum < fair && cheat_sum > cheater) {
+                    System.out.println("A minimum of " + (j) + " tosses out of " + (i) + " are required to make a decent assumption that someone is cheating.");
+                    flag = 1;
+                    break;
+                }
+                fair_sum = 0;
+                cheat_sum = 0;
+            }
+            fair_sum = 0;
+            cheat_sum = 0;
         }
-        binfair[4].Display(10);*/
-        for(int i=0; flag!=1;i++){
-            binfair[i] = new BinomialDistribution(val,0.5);
-            bincheat[i] = new BinomialDistribution(val,percentage);
-            flag = binfair[i].probability(binfair[i],bincheat[i],fair,cheater);
-            //problem here is that I can't way of terminating the program without
-            //a return value, but that prevents text from being displayed....or is that the case???
-            //checking would be useful
-        }
-
     }
 }
