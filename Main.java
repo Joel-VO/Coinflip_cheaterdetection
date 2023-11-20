@@ -55,8 +55,8 @@ public class Main {
     public static void main(String[] args) {
         int flag = 0, val = 0;
         double fair_sum = 0, cheat_sum = 0;
-        BinomialDistribution[] binfair = new BinomialDistribution[1000];
-        BinomialDistribution[] bincheat = new BinomialDistribution[1000];
+        BinomialDistribution[] binfair = new BinomialDistribution[100000];
+        BinomialDistribution[] bincheat = new BinomialDistribution[100000];
         Scanner sc = new Scanner(System.in);
         System.out.println("Enter the acceptable percentage of fair players labelled as cheaters: ");
         double fair = sc.nextDouble();
@@ -66,13 +66,7 @@ public class Main {
         double percentage = sc.nextDouble();
         // do the binfair array declaration, then assign value using method ArrayDeclaration and then do a test to see if
         //array is displayed
-        /*for (int f = 0; f <= 5; f++) {
-            binfair[f] = new BinomialDistribution(val, 0.5);
-            val++;
-        }*/
-        /*binfair[4].Display(4);
-        System.out.println();
-        System.out.println(binfair[4].SliderValue(4,2));*/
+        System.out.println("Calculating...");
         for(int i = 0;flag==0;i++){
             binfair[i] = new BinomialDistribution(i,0.5);
             bincheat[i] = new BinomialDistribution(i,percentage);
@@ -81,7 +75,7 @@ public class Main {
                 fair_sum += binfair[i].SliderValue(i, j);
                 cheat_sum += bincheat[i].SliderValue(i, j);
                 if (fair_sum < fair && cheat_sum > cheater) {
-                    System.out.println("A minimum of " + (j) + " tosses out of " + (i) + " are required to make a decent assumption that someone is cheating.");
+                    System.out.println("A minimum of " + (i-j+1) + " tosses out of " + (i) + " are required to make a decent assumption that someone is cheating.");
                     flag = 1;
                     break;
                 }
