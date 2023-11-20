@@ -75,13 +75,15 @@ public class Main {
                 fair_sum += binfair[i].SliderValue(i, j);
                 cheat_sum += bincheat[i].SliderValue(i, j);
                 if (fair_sum < fair && cheat_sum > cheater) {
-                    System.out.println("A minimum of " + (i-j+1) + " tosses out of " + (i) + " are required to make a decent assumption that someone is cheating.");
+                    System.out.println("A minimum of " + (i-j+1) + " heads out of " + (i) + " are required to make a decent assumption that someone is cheating.");
                     flag = 1;
                     break;
                 }
                 fair_sum = 0;
                 cheat_sum = 0;
             }
+            binfair[i] = null;
+            bincheat[i] = null;
             fair_sum = 0;
             cheat_sum = 0;
         }
