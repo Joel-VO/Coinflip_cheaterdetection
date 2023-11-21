@@ -29,20 +29,20 @@ class BinomialDistribution{
                     }
                 }
             }
-            binomial = (fact_n/(fact_r*fact_nr))*(Math.pow(prob,r)*Math.pow((1-prob),(n-r)));//heart and soul of the
-            // program, the binomial distribution formula
+            binomial = (fact_n/(fact_r*fact_nr))*(Math.pow(prob,r)*Math.pow((1-prob),(n-r)));//binomial distribution formula
             array[r] = binomial;
             fact_n=1;
             fact_r=1;
             fact_nr=1;
         }
     }
-    void Display(int n){
+    void Display(int n){//displays binomial distribution for a particular value of n
         for(int i = 0;i<=n;i++){
             System.out.print(" "+array[i]);
         }
     }
-    double SliderValue(int max,int val){//n+1 elements
+    double SliderValue(int max,int val){//returns sum of probabilities for a max value i and a min value j
+        //determined by the main method
         double flag=0;
         for(int i = max+1;val>=0;i--){
             flag+=array[i];
@@ -53,8 +53,9 @@ class BinomialDistribution{
 }
 public class Main {
     public static void main(String[] args) {
-        int flag = 0, val = 0;
-        double fair_sum = 0, cheat_sum = 0;
+        //enter all percentages in the run program in terms of decimals,ie; 60% would be 0.6 and so on
+        int flag = 0;
+        double fair_sum,cheat_sum;
         BinomialDistribution[] binfair = new BinomialDistribution[100000];
         BinomialDistribution[] bincheat = new BinomialDistribution[100000];
         Scanner sc = new Scanner(System.in);
@@ -67,25 +68,21 @@ public class Main {
         // do the binfair array declaration, then assign value using method ArrayDeclaration and then do a test to see if
         //array is displayed
         System.out.println("Calculating...");
-        for(int i = 0;flag==0;i++){
+        for(int i = 0;flag==0;i++){//
             binfair[i] = new BinomialDistribution(i,0.5);
             bincheat[i] = new BinomialDistribution(i,percentage);
             for(int j = 0;j<=i;j++) {
-                //the conditions should come after the values sum in each case is obtained.
-                fair_sum += binfair[i].SliderValue(i, j);
-                cheat_sum += bincheat[i].SliderValue(i, j);
-                if (fair_sum < fair && cheat_sum > cheater) {
+                fair_sum = binfair[i].SliderValue(i, j);//takes sum of terms from the right most end and works its way towards the start of the array
+                cheat_sum = bincheat[i].SliderValue(i, j);
+                System.out.println(" "+i+" "+(i-j+1));
+                if (fair_sum <= fair && cheat_sum >= cheater) {// checks if the condition for max fair players falsely accused and minimum cheaters caught
                     System.out.println("A minimum of " + (i-j+1) + " heads out of " + (i) + " are required to make a decent assumption that someone is cheating.");
                     flag = 1;
                     break;
                 }
-                fair_sum = 0;
-                cheat_sum = 0;
             }
             binfair[i] = null;
             bincheat[i] = null;
-            fair_sum = 0;
-            cheat_sum = 0;
         }
     }
 }
