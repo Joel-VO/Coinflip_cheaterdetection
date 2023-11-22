@@ -1,88 +1,89 @@
 import java.util.*;
-class BinomialDistribution{
-    /*Class to get binomial distribution percentage in each case, we can use the values obtained to
-     * obtain each column of the binomial distribution graph*/
-    double binomial;
-    double []array = new double[100000];
-    double fact_n=1,fact_r=1,fact_nr=1;
-    BinomialDistribution(int n,double prob){
-        for(int r=0;r<=n;r++) {
-            //if statements used to prevent division by 0
-            if(n!=0){//for the n'th term
-                for(double i=0;i<=n;i++){
-                    if(i!=0){
-                        fact_n*=i;
-                    }
-                }
-            }
-            if(r!=0){//for the r'th term
-                for (double j=0; j<=r;j++) {
-                    if(j!=0){
-                        fact_r *= j;
-                    }
-                }
-            }
-            if((n-r)!=0) {//for the (n-r)'th term
-                for(double k=0;k<=(n-r);k++){
-                    if(k!=0) {
-                        fact_nr *= k;
-                    }
-                }
-            }
-            binomial = (fact_n/(fact_r*fact_nr))*(Math.pow(prob,r)*Math.pow((1-prob),(n-r)));//binomial distribution formula
-            array[r] = binomial;
-            fact_n=1;
-            fact_r=1;
-            fact_nr=1;
+
+class BinomialDistribution {
+    double[] probabilities; // Array to store the probabilities
+    int trials; // Number of trials
+    double probability; // Probability of success
+
+    // Constructor
+    BinomialDistribution(int trials, double probability) {
+        this.trials = trials;
+        this.probability = probability;
+        this.probabilities = new double[trials + 1]; // Initialize the probabilities array
+        calculateProbabilities(); // Calculate the probabilities
+    }
+
+    // Method to calculate the probabilities
+    private void calculateProbabilities() {
+        for (int successes = 0; successes <= trials; successes++) {
+            double failureProbability = 1 - probability; // Probability of failure
+            int failures = trials - successes; // Number of failures
+            double combination = calculateCombination(trials, successes); // Calculate the combination
+            // Calculate the probability using the binomial distribution formula
+            probabilities[successes] = combination * Math.pow(probability, successes) * Math.pow(failureProbability, failures);
         }
     }
-    void Display(int n){//displays binomial distribution for a particular value of n
-        for(int i = 0;i<=n;i++){
-            System.out.print(" "+array[i]);
+
+    // Method to calculate the combination (nCr)
+    private double calculateCombination(int n, int r) {
+        return factorial(n) / (factorial(r) * factorial(n - r));
+    }
+
+    // Method to calculate the factorial of a number
+    private double factorial(int n) {
+        double result = 1;
+        for (int i = 1; i <= n; i++) {
+            result *= i;
+        }
+        return result;
+    }
+
+    // Method to display the probabilities
+    void display() {
+        for (double probability : probabilities) {
+            System.out.print(" " + probability);
         }
     }
-    double SliderValue(int max,int val){//returns sum of probabilities for a max value i and a min value j
-        //determined by the main method
-        double flag=0;
-        for(int i = max+1;val>=0;i--){
-            flag+=array[i];
-            val--;
+
+    // Method to calculate the sum of probabilities for a given range
+    double sliderValue(int max, int val) {
+        double sum = 0;
+        for (int i = max; i >= val; i--) {
+            sum += probabilities[i];
         }
-        return flag;
+        return sum;
     }
 }
+
 public class Main {
     public static void main(String[] args) {
-        //enter all percentages in the run program in terms of decimals,ie; 60% would be 0.6 and so on
-        int flag = 0;
-        double fair_sum,cheat_sum;
-        BinomialDistribution[] binfair = new BinomialDistribution[100000];
-        BinomialDistribution[] bincheat = new BinomialDistribution[100000];
         Scanner sc = new Scanner(System.in);
+        // Prompt the user to enter the acceptable percentage of fair players labelled as cheaters
         System.out.println("Enter the acceptable percentage of fair players labelled as cheaters: ");
         double fair = sc.nextDouble();
+        // Prompt the user to enter the acceptable percentage of cheaters caught
         System.out.println("Enter the acceptable percentage of cheaters caught: ");
         double cheater = sc.nextDouble();
+        // Prompt the user to enter the percentage chance the cheaters coin comes up heads
         System.out.println("Enter the percentage chance the cheaters coin comes up heads: ");
         double percentage = sc.nextDouble();
-        // do the binfair array declaration, then assign value using method ArrayDeclaration and then do a test to see if
-        //array is displayed
+
         System.out.println("Calculating...");
-        for(int i = 0;flag==0;i++){//
-            binfair[i] = new BinomialDistribution(i,0.5);
-            bincheat[i] = new BinomialDistribution(i,percentage);
-            for(int j = 0;j<=i;j++) {
-                fair_sum = binfair[i].SliderValue(i, j);//takes sum of terms from the right most end and works its way towards the start of the array
-                cheat_sum = bincheat[i].SliderValue(i, j);
-                System.out.println(" "+i+" "+(i-j+1));
-                if (fair_sum <= fair && cheat_sum >= cheater) {// checks if the condition for max fair players falsely accused and minimum cheaters caught
-                    System.out.println("A minimum of " + (i-j+1) + " heads out of " + (i) + " are required to make a decent assumption that someone is cheating.");
-                    flag = 1;
-                    break;
+        for (int i = 0; ; i++) {
+            // Calculate the binomial distribution for fair and cheating players
+            BinomialDistribution binfair = new BinomialDistribution(i, 0.5);
+            BinomialDistribution bincheat = new BinomialDistribution(i, percentage);
+            for (int j = 0; j <= i; j++) {
+                // Calculate the sum of probabilities for a given range
+                double fair_sum = binfair.sliderValue(i, j);
+                double cheat_sum = bincheat.sliderValue(i, j);
+                System.out.println(" " + i + " " + (i - j + 1));
+                // Check if the condition for max fair players falsely accused and minimum cheaters caught is met
+                if (fair_sum <= fair && cheat_sum >= cheater) {
+                    System.out.println("A minimum of " + (i - j + 1) + " heads out of " + i + " are required to make a decent assumption that someone is cheating.");
+                    return;
                 }
             }
-            binfair[i] = null;
-            bincheat[i] = null;
         }
     }
 }
