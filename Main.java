@@ -77,10 +77,9 @@ public class Main {
                 // Calculate the sum of probabilities for a given range
                 double fair_sum = binfair.sliderValue(i, j);
                 double cheat_sum = bincheat.sliderValue(i, j);
-                System.out.println(" " + i + " " + (i - j + 1));
                 // Check if the condition for max fair players falsely accused and minimum cheaters caught is met
                 if (fair_sum <= fair && cheat_sum >= cheater) {
-                    System.out.println("A minimum of " + (i - j + 1) + " heads out of " + i + " are required to make a decent assumption that someone is cheating.");
+                    System.out.println("A minimum of " + (j) + " heads out of " + i + " are required to make a decent assumption that someone is cheating.");
                     return;
                 }
             }
